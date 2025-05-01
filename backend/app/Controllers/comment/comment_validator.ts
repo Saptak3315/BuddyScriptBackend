@@ -13,5 +13,6 @@ export const ReplyValidate=vine.compile(
 )
 export const ShowComment=vine.compile(
     vine.object({
-        postId:vine.number()
+        postId:vine.number(),
+        page:vine.number()
 }))

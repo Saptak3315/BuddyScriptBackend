@@ -10,7 +10,7 @@ export default class CommentService{
     public async ShowReply(data:{commentId:number}){
         return await this.commentQuery.showReply(data.commentId)
     }
-    public async ShowComment(data:{postId:number}){
-        return await this.commentQuery.showComment(data.postId)
+    public async ShowComment(data:{postId:number,page:number}){
+        return await this.commentQuery.showComment(data.postId,data.page)
     }
 }

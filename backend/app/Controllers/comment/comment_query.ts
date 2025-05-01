@@ -8,7 +8,12 @@ export default class CommentQuery{
     public async showReply(commentId:number){
         return await Reply.query().where('commentId',commentId).preload('user');
     }
-    public async showComment(postId:number){
-        return await Comment.query().where('postId',postId).limit(7).preload('user');
+    public async showComment(postId:number,page:number){
+    return await Comment
+        .query()
+        .where('postId', postId)
+        .preload('user')
+        .orderBy('id', 'desc')
+        .paginate(page, 7);
     }
 }

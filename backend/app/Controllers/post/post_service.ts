@@ -11,8 +11,8 @@ export default class PostService{
     public async DeletePost(data:{postId:number}){
         return await this.postQuery.deletePost(data.postId);
     }
-    public async UpdatePost(data:{postId:number,content:string}){
-        return await this.postQuery.updatePost(data.postId,data.content)
+    public async UpdatePost(data:{postId:number,content:string,userId:number}){
+        return await this.postQuery.updatePost(data.postId,data.content,data.userId)
     }
     public async GetLike(data:{postId:number}){
         return await this.postQuery.getLike(data.postId)
@@ -26,7 +26,7 @@ export default class PostService{
     public async ShowComments(data:{postId:number}){
         return await this.postQuery.showComments(data.postId)
     }
-    public async AllPost(){
-        return await this.postQuery.AllPost()
+    public async AllPost(userId:number,page:number){
+        return await this.postQuery.AllPost(userId,page)
     }
 }
