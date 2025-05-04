@@ -14,7 +14,7 @@ export default function Post() {
   const posts = useSelector((state: any) => state.auth.allpost);
   const currentUser = useSelector((state: RootState) => state.auth.logedin)
   const [page, setPage] = useState(1);
-const [hasMore, setHasMore] = useState(true);
+  const [hasMore, setHasMore] = useState(true);
   const [newPost, setNewPost] = useState<string>("");
   // useEffect(() => {
   //   // axios

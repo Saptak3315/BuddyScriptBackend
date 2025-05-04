@@ -16,7 +16,7 @@ export default function Nb() {
 		navigate("/login");
 		
 	}catch{
-
+		
 	}
   };
   return (

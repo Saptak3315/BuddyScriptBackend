@@ -15,7 +15,7 @@ const Register: React.FC = () => {
   const Dispatch=useDispatch()
   useEffect(()=>{
     axios.get('http://localhost:3333/islogin',{withCredentials:true}).then(res=>Dispatch(logedin({id:res.data.id,name:res.data.username})))
-  })
+  },[])
   if (username1.id !==-1) {
     navigate('/feed')
   }

@@ -12,14 +12,16 @@ export default class PostController{
         const post=await this.postService.CreatePost(payload);
         return response.send(post)
     }
-    public async updatePost({request,response}:HttpContext){
+    public async updatePost({request,response,auth}:HttpContext){
         const payload=await request.validateUsing(UpdatePost);
-        const post=await this.postService.UpdatePost(payload);
+        const user=await auth.authenticate()
+        const post=await this.postService.UpdatePost(payload,user.id);
         return response.send(post)
     }
-    public async deletePost({request,response}:HttpContext){
+    public async deletePost({request,response,auth}:HttpContext){
         const payload=await request.validateUsing(DeletePost);
-        const post=await this.postService.DeletePost(payload);
+        const user=await auth.authenticate()
+        const post=await this.postService.DeletePost(payload,user.id);
         return response.send(post)
     }
     public async getLike({request,response}:HttpContext){

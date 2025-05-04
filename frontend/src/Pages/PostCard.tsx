@@ -11,7 +11,6 @@ import Reply from "./Reply";
 import { likepost, deletelike, commentCount, allLikers } from "../redux/authSlice";
 import Comment from "./Comment";
 import { Button, Tooltip } from "antd";
-<LikeOutlined />
 interface PostType {
   id: number;
   user: string;
@@ -68,14 +67,6 @@ const PostCard: React.FC<any> = ({ obj }) => {
       });
   };
 
-
-
-
-
-
-
-
-
   // useEffect(() => {
   //   // axios
   //   //   .get("http://localhost:3333/gl", {
@@ -130,43 +121,40 @@ const PostCard: React.FC<any> = ({ obj }) => {
 
 
   const handleLike = async (postId: number, userId: number) => {
-    const likedBefore = liked === true;
+    const likedBefore = (() => {
+      const post = posts.find(p => p.id === obj.id);
+      const isLiked = post?.isLikedByUser;
+      return isLiked === true;
+    })();
 
     if (!likedBefore) {
       await axios.post("http://localhost:3333/like", { postId, userId }).then((res) => {
-
-
-        setLiked(true);
-        scol(col + 1);
-        // setLikers(prev => [...prev, obj.user.username]);
-
-
+        const post = posts.find(p => p.id === obj.id);
+        const likername = post?.likers ?? [];
+        // setLiked(true);
+        // scol(col + 1);
         console.log(Likes, "Likes")
         dispatch(likepost(obj.id));
-        dispatch(allLikers({ id: obj.id, likers: [...Likes, username.name] }))
-        setLikers(res.data.ln);
-        scol(res.data.nol)
+        dispatch(allLikers({ id: obj.id, likers: [...likername, username.name] }))
+        // setLikers(res.data.ln);
+        // scol(res.data.nol)
       });
     } else {
       await axios.post("http://localhost:3333/dl", { postId, userId }).then((res) => {
+        const post = posts.find(p => p.id === obj.id);
+        const likername = post?.likers ?? [];
+        const updatedLikers = likername?.filter(name => name !== username.name);
+        // setLiked(false);
+        // scol(col - 1);
 
-
-        setLiked(false);
-        scol(col - 1);
-
-        console.log(Likes, "UnLikes")
-        console.log(Likes);
-        const lc = [...Likes];
-        lc.pop()
+        // console.log(Likes, "UnLikes")
+        // console.log(Likes);
         dispatch(deletelike(obj.id));
-        dispatch(allLikers({ id: obj.id, likers: [...lc] }))
-        setLikers(res.data.ln);
-        scol(res.data.nol)
+        dispatch(allLikers({ id: obj.id, likers: updatedLikers }))
+        //setLikers(res.data.ln);
+        // scol(res.data.nol)
       });
     }
-
-
-
   };
 
   const postToggle = (e: React.MouseEvent) => {
@@ -185,7 +173,7 @@ const PostCard: React.FC<any> = ({ obj }) => {
       alert("Please write something.");
       return;
     }
-    axios.post('http://localhost:3333/up', { postId: obj.id, content: newContent, userId: username.id })
+    axios.post('http://localhost:3333/up', { postId: obj.id, content: newContent }, { withCredentials: true })
       .then((res) => {
         dispatch((editPost({ postId, newContent })));
       })
@@ -389,10 +377,18 @@ const PostCard: React.FC<any> = ({ obj }) => {
           onMouseEnter={() => setShowLikers(true)}
           onMouseLeave={() => setShowLikers(false)}
         >
-          {col}
-          {col < 2 ? " Like" : " Likes"}
+          {posts.map(p => {
+            if (p.id === obj.id) {
+              return <div>{p.likeCount}</div>
+            }
+          })}
+          {(() => {
+            const post = posts.find(p => p.id === obj.id);
+            const count = post?.likeCount || 0;
+            return count < 2 ? " Like" : " Likes";
+          })()}
 
-          {showLikers && Likes.length > 0 && (
+          {showLikers  && (
             <div style={{
               position: "absolute",
               top: "100%",
@@ -407,12 +403,20 @@ const PostCard: React.FC<any> = ({ obj }) => {
             }}>
               <h4 style={{ margin: "0 0 6px 0", fontSize: "14px" }}>Liked by:</h4>
               <ul style={{ listStyle: "none", padding: 0, margin: 0, maxHeight: "150px", overflowY: "auto" }}>
-                {Likes.map((liker, index) => (
-                  <li key={index} style={{ padding: "4px 0", fontSize: "13px", borderBottom: "1px solid #eee" }}>
+                {posts.find(p => p.id === obj.id)?.likers.map((liker, index) => (
+                  <li
+                    key={index}
+                    style={{
+                      padding: "4px 0",
+                      fontSize: "13px",
+                      borderBottom: "1px solid #eee",
+                    }}
+                  >
                     {liker}
                   </li>
                 ))}
               </ul>
+
             </div>
           )}
         </div>
@@ -433,20 +437,24 @@ const PostCard: React.FC<any> = ({ obj }) => {
         >
           <span className="_feed_inner_timeline_reaction_link">
             <span>
-              {liked ? (
-                <Tooltip title="You liked this">
+              {
+                (() => {
+                  const post = posts.find(p => p.id === obj.id);
+                  // if (!post) return null;
+                  return post?.isLikedByUser ? (
+                    <Tooltip title="You liked this">
+                      <LikeFilled />
+                      Liked
+                    </Tooltip>
+                  ) : (
+                    <Tooltip title="Click to like">
+                      <LikeOutlined />
+                      Like
+                    </Tooltip>
+                  );
+                })()
+              }
 
-                  <LikeFilled />
-                  Liked
-                </Tooltip>
-              ) : (
-                <Tooltip title="Click to like">
-
-                  <LikeOutlined />
-                  Like
-
-                </Tooltip>
-              )}
             </span>
 
 
@@ -474,24 +482,6 @@ const PostCard: React.FC<any> = ({ obj }) => {
         }
 
         }
-
-          //       onClick={() => {
-          //   if (ctog === true) {
-          //     axios
-          //       .get(`http://localhost:3333/showcomment/${1}`</div>, {
-          //         params: { postId: obj.id },
-          //       })
-          //       .then((res) => {
-          //         setComments(res.data);
-          //       })
-          //       .catch((err) => {
-          //         console.error("Error fetching comments:", err);
-          //       });
-          //   } else {
-          //     setComments([]);
-          //   }
-          //   sctog(!ctog);
-          // }} 
           className="_feed_inner_timeline_reaction_comment _feed_reaction"
         >
           <span className="_feed_inner_timeline_reaction_link">

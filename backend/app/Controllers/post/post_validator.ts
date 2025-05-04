@@ -16,7 +16,6 @@ export const CreatePost = vine.compile(
     vine.object({
       postId: vine.number(),
       content: vine.string(),
-      userId: vine.number()
     })
   )
   export const getLike = vine.compile(
